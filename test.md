@@ -78,22 +78,42 @@ finalCheck --> finish[完成]
 flowchart TB
 start(準備開始) --> planSchedule[調理スケジュール立案]
 planSchedule --> listMaterials[必要な材料リスト作成<br/>麺・卵・野菜・肉・チーズ・サラダなど]
-listMaterials --> parallelStart[複数加熱タスク並列実行]
-parallelStart --> task1[タスク1: メイン麺の調理]
-parallelStart --> task2[タスク2: 卵をサイドで調理]
-parallelStart --> task3[タスク3: 野菜をレンジで加熱]
-task1 --> boilNoodles[別鍋で400ml沸騰]
-task2 --> prepEgg[別の小鍋で卵を準備]
-task3 --> heatVeg[電子レンジで2分加熱]
-boilNoodles --> cookNoodles[麺を投入・3分茹でる]
-prepEgg --> cookEgg[卵を加熱・2分30秒]
-heatVeg --> finishVeg[野菜加熱完了]
-cookNoodles --> transferCup[カップに移す]
-cookEgg --> addEgg[カップに加える]
-finishVeg --> addVeg[カップに加える]
-transferCup --> combine[すべての材料を統合]
-addEgg --> combine
-addVeg --> combine
+listMaterials --> syncStart{並列調理開始}
+
+subgraph parallel ["🔥 並列調理タスク"]
+    direction TB
+    subgraph noodle ["麺の調理"]
+        direction TB
+        boilNoodles[別鍋で400ml沸騰]
+        cookNoodles[麺を投入・3分茹でる]
+        boilNoodles --> cookNoodles
+    end
+    
+    subgraph egg ["卵の調理"]
+        direction TB
+        prepEgg[別の小鍋で卵を準備]
+        cookEgg[卵を加熱・2分30秒]
+        prepEgg --> cookEgg
+    end
+    
+    subgraph veg ["野菜の準備"]
+        direction TB
+        heatVeg[電子レンジで2分加熱]
+        finishVeg[野菜加熱完了]
+        heatVeg --> finishVeg
+    end
+end
+
+syncStart --> boilNoodles
+syncStart --> prepEgg
+syncStart --> heatVeg
+
+cookNoodles --> gather{材料統合}
+cookEgg --> gather
+finishVeg --> gather
+
+gather --> transferCup[すべての材料をカップに移す]
+transferCup --> combine[軽く混ぜて統合]
 combine --> mixSoup[スープベースを混ぜ込む]
 mixSoup --> taste[味見をする]
 taste --> checkTaste{調味が足りない？}
