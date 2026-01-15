@@ -77,7 +77,7 @@ finalCheck --> finish[完成]
 ```mermaid
 flowchart TB
 start(準備開始) --> planSchedule[調理スケジュール立案]
-planSchedule --> listMaterials[必要な材料リスト作成<br/>麺・卵・野菜・肉・チーズ・サラダなど]
+planSchedule --> listMaterials[必要な材料リスト作成<br/>麺・卵・もやし・ハムなど]
 listMaterials --> syncStart{並列調理開始}
 
 subgraph parallel ["🔥 並列調理タスク"]
